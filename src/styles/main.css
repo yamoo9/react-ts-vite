@@ -1,0 +1,6 @@
+@layer normalize, base, animation;
+
+@import "./tailwind.css";
+@import "./common/_normalize.css" layer(normalize);
+@import "./common/_base.css" layer(base);
+@import "./common/_animation.css" layer(animation);

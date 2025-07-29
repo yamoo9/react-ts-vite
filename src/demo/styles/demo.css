@@ -1,0 +1,19 @@
+@import url("./spoqa-han-sans-neo.css");
+
+body {
+  --hue: 340;
+  --color: hsl(var(--hue) 96% 58%);
+  --background-color: hsl(240 33% 1%);
+
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--background-color);
+  color: var(--color);
+  font-size: 1rem; 
+  font-family: 'Spoqa Han Sans Neo', sans-serif;
+  line-height: 1.5;
+  transition: color 0.6s linear;
+}
+

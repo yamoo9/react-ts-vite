@@ -1,0 +1,14 @@
+.logo {
+  --top: 10dvh;
+  --size: 5dvh;
+
+  position: fixed;
+  top: var(--top);
+  left: 50%;
+  translate: -50% 0;
+
+  block-size: var(--size);
+  inline-size: var(--size);
+
+  animation: rotate 20s linear infinite;
+}
