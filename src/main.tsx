@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import App from './demo/app'
 import './styles/main.css'
-import App from './app'
 
 const CONTAINER_SELECTOR = 'root'
 const container = document.getElementById(CONTAINER_SELECTOR)
