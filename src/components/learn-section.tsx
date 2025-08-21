@@ -1,6 +1,6 @@
-import type { PropsWithChildren } from 'react'
+import type { ComponentProps } from 'react'
 
-type Props = PropsWithChildren<{ title: string; showTitle?: boolean }>
+type Props = { title: string; showTitle?: boolean } & ComponentProps<'section'>
 
 export default function LearnSection(props: Props) {
   const { title, showTitle = false, children, ...restProps } = props

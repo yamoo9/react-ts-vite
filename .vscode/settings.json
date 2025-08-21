@@ -24,6 +24,8 @@
   // 절대경로를 워크스페이스 기준으로 설정
   "path-intellisense.absolutePathToWorkspace": true,
   // jsconfig/tsconfig `baseUrl`, `paths`를 사용 설정
-  "path-intellisense.ignoreTsConfigBaseUrl": false, 
+  "path-intellisense.ignoreTsConfigBaseUrl": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  
 
 }

@@ -1,9 +1,9 @@
 {
   "private": true,
   "type": "module",
-  "name": "react-js-vite",
-  "description": "리액트 템플릿 (Bun + Vite)",
-  "version": "1.1.4",
+  "name": "react-ts-vite",
+  "description": "리액트 템플릿 (Bun + Vite + TypeScript)",
+  "version": "1.2.0",
   "bun-create": {
     "preinstall": [],
     "postinstall": ["bunx rimraf -rf .git", "bunx rimraf -rf dist"],
@@ -23,6 +23,7 @@
     "immer": "^10.1.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-error-boundary": "^6.0.0",
     "use-immer": "^0.11.0"
   },
   "devDependencies": {

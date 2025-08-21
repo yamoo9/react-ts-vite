@@ -59,7 +59,8 @@ export default defineConfig([
       // 미사용 변수 제거
       // - 코드 정리 및 메모리 최적화
       // - 밑줄(_)로 시작하는 매개변수는 예외 처리 (의도적 미사용)
-      'no-unused-vars': [
+      // - 타입스크립트에서는 "@typescript-eslint/no-unused-vars" 사용
+      '@typescript-eslint/no-unused-vars': [
         'error',
         { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' },
       ],
