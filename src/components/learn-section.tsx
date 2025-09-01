@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react'
 import { tw } from '@/utils'
 
-type Props = { title: string; showTitle?: boolean } & ComponentProps<'section'>
+type Props = ComponentProps<'section'> & { title: string; showTitle?: boolean }
 
 export default function LearnSection(props: Props) {
   const { title, showTitle = false, children, ...restProps } = props
