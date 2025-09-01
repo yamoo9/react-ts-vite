@@ -7,7 +7,13 @@ import pluginReactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import globals from 'globals'
 import path from 'node:path'
-import tseslint from 'typescript-eslint'
+import * as tseslint from 'typescript-eslint'
+
+// 플러그인 구성을 개별 변수로 분리
+const reactJsxRuntime = pluginReact.configs.flat['jsx-runtime']
+const reactHooksRecommended = pluginReactHooks.configs['recommended-latest']
+const jsxA11yRecommended = pluginJsxA11y.flatConfigs.recommended
+const reactRefreshVite = pluginReactRefresh.configs.vite
 
 export default defineConfig([
   // 'dist' 폴더 전체를 ESLint 검사에서 제외 (빌드된 결과물 무시)
@@ -34,6 +40,9 @@ export default defineConfig([
   // 구성 파일에는 타입 검사를 적용하지 않음
   {
     files: ['eslint.config.ts', 'vite.config.ts', '*.config.ts', '*.config.js'],
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+    },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
     },
@@ -42,19 +51,25 @@ export default defineConfig([
   // 소스 코드에만 TypeScript 타입 검사 적용
   {
     files: ['src/**/*.{ts,tsx}'],
-    ...tseslint.configs.recommended,
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
         tsconfigRootDir: path.resolve(process.cwd()),
         project: ['./tsconfig.json'],
       },
     },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+    },
+    // 권장 규칙을 직접 확장(extend)하는 방식 사용
+    extends: [tseslint.configs.recommended],
   },
 
-  pluginReact.configs.flat['jsx-runtime'],
-  pluginReactHooks.configs['recommended-latest'],
-  pluginJsxA11y.flatConfigs.recommended,
-  pluginReactRefresh.configs.vite,
+  // 개별 변수로 분리한 플러그인 구성 사용
+  reactJsxRuntime,
+  reactHooksRecommended,
+  jsxA11yRecommended,
+  reactRefreshVite,
   pluginPrettierRecommand,
 
   {
