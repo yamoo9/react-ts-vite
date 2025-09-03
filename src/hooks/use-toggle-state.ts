@@ -1,21 +1,30 @@
 import { useCallback, useEffect, useState } from 'react'
 
 /**
- * boolean 상태를 간편하게 on/off/toggle 할 수 있는 커스텀 훅입니다.
- *
- * 초깃값 변경 시 상태가 동기화됩니다.
+ * 토글 상태를 관리하는 커스텀 훅입니다.
  *
  * @example
  * // 기본 사용법
- * const { isToggle, on, off, toggle, set } = useToggleState()
- * on()     // true로 변경
- * off()    // false로 변경
- * toggle() // true/false 토글
- * set(false) // 직접 값 설정
+ * const [isToggle, { on, off, toggle, set }] = useToggleState()
+ *
+ * // 토글 상태 확인
+ * console.log(isToggle) // true 또는 false
+ *
+ * // 상태 켜기
+ * on()
+ *
+ * // 상태 끄기
+ * off()
+ *
+ * // 상태 전환
+ * toggle()
+ *
+ * // 직접 값 설정
+ * set(false)
  *
  * @example
- * // 초깃값 지정
- * const { isToggle } = useToggleState(false) // 초기값: false
+ * // 초기값을 false로 설정
+ * const [isToggle, controls] = useToggleState(false)
  */
 export default function useToggleState(initialValue: boolean = true) {
   const [isToggle, setIsToggle] = useState<boolean>(initialValue)
@@ -29,5 +38,5 @@ export default function useToggleState(initialValue: boolean = true) {
     setIsToggle(initialValue)
   }, [initialValue])
 
-  return { isToggle, on, off, toggle, set: setIsToggle } as const
+  return [isToggle, { on, off, toggle, set: setIsToggle }] as const
 }

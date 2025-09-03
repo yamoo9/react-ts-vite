@@ -1,48 +1,98 @@
-import { type ChangeEvent, useCallback, useEffect, useState } from 'react'
+import {
+  type ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { Timeout } from '@/@types/global'
 
 /**
- * 입력값 상태 및 onChange 핸들러를 반환하는 커스텀 훅입니다.
- *
- * @template T 입력값의 타입
- *
  * @example
- * // 문자열 입력 관리
- * const nameInput = useInput('', v => v)
- * <input value={nameInput.value} onChange={nameInput.onChange} />
+ * // 기본 문자열 입력 관리
+ * const input = useInput('')
+ * <input value={input.value} onChange={input.onChange} />
  *
  * @example
  * // 숫자 입력 관리
- * const ageInput = useInput(0, v => Number(v))
- * <input value={ageInput.value} onChange={ageInput.onChange} type="number" />
+ * const input = useInput(0, { parser: v => Number(v) })
+ * <input value={input.value} onChange={input.onChange} type="number" />
  *
  * @example
  * // JSON 파싱 예시
- * const jsonInput = useInput({}, v => {
- *   try {
- *     return JSON.parse(v)
- *   } catch {
- *     return {}
- *   }
+ * const input = useInput({}, {
+ *   parser: v => { try { return JSON.parse(v) } catch { return {} } }
  * })
- * <input value={JSON.stringify(jsonInput.value)} onChange={jsonInput.onChange} />
+ * <input value={JSON.stringify(input.value)} onChange={input.onChange} />
+ *
+ * @example
+ * // 값 변경 시 콜백 실행
+ * const input = useInput('', {
+ *   onChange: (val, e) => console.log('입력값:', val)
+ * })
+ * <input value={input.value} onChange={input.onChange} />
+ *
+ * @example
+ * // 디바운스 적용 (500ms)
+ * const input = useInput('', { debounceTime: 500 })
+ * <input value={input.defaultValue} onChange={input.onChange} />
  */
 export default function useInput<T>(
   initialValue: T,
-  parser: (value: string) => T
-) {
+  options?: {
+    parser?: (value: string) => T
+    onChange?: (value: T, e: ChangeEvent<HTMLInputElement>) => void
+    debounceTime?: number
+  }
+): {
+  value?: T
+  defaultValue?: T
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
+} {
+  const parser = useMemo(
+    () => options?.parser ?? ((v: string) => v),
+    [options?.parser]
+  )
+
+  const changedCallback = options?.onChange
+
   const [value, setValue] = useState<T>(initialValue)
 
-  const onChange = useCallback(
+  const debouceTime = options?.debounceTime ?? 0
+  const timerRef = useRef<Timeout | null>(null)
+
+  const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setValue(parser(e.target.value))
+      const parsed = parser(e.target.value)
+
+      if (debouceTime > 0) {
+        if (timerRef.current) clearTimeout(timerRef.current)
+        timerRef.current = setTimeout(() => {
+          setValue(parsed as T)
+          changedCallback?.(parsed as T, e)
+        }, debouceTime)
+      } else {
+        setValue(parsed as T)
+        changedCallback?.(parsed as T, e)
+      }
     },
-    [parser]
+    [parser, debouceTime, changedCallback]
   )
 
   useEffect(() => {
-    // 초깃값(initialValue) 변경 시, 상태 동기화
     setValue(initialValue)
   }, [initialValue])
 
-  return { value, onChange }
+  // 컴포넌트 unmount 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
+
+  return {
+    [debouceTime > 0 ? 'defaultValue' : 'value']: value,
+    onChange: handleChange,
+  }
 }
