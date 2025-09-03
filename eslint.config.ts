@@ -9,7 +9,6 @@ import globals from 'globals'
 import path from 'node:path'
 import * as tseslint from 'typescript-eslint'
 
-// 플러그인 구성을 개별 변수로 분리
 const reactJsxRuntime = pluginReact.configs.flat['jsx-runtime']
 const reactHooksRecommended = pluginReactHooks.configs['recommended-latest']
 const jsxA11yRecommended = pluginJsxA11y.flatConfigs.recommended
@@ -61,17 +60,18 @@ export default defineConfig([
     plugins: {
       '@typescript-eslint': tseslint.plugin,
     },
-    // 권장 규칙을 직접 확장(extend)하는 방식 사용
+    // 권장 규칙을 직접 확장(extend)
     extends: [tseslint.configs.recommended],
   },
 
-  // 개별 변수로 분리한 플러그인 구성 사용
+  // 플러그인 구성
   reactJsxRuntime,
   reactHooksRecommended,
   jsxA11yRecommended,
   reactRefreshVite,
   pluginPrettierRecommand,
 
+  // 사용자 정의 규칙
   {
     rules: {
       // 정의되지 않은 변수 사용 금지
@@ -137,7 +137,7 @@ export default defineConfig([
         },
       ],
 
-      // 화살표 함수 본문 스타일∏
+      // 화살표 함수 본문 스타일
       // - 간결한 표현식 강제
       // - 단일 표현식일 때 중괄호와 return 생략 강제
       // 'arrow-body-style': ['error', 'as-needed'],
