@@ -3,31 +3,63 @@ import type { Draft } from 'immer'
 import { useImmer } from 'use-immer'
 import { type State } from '@/@types/global'
 
-// 추가 옵션 타입
 interface Options<T> {
-  autoReset?: boolean // 성공/실패 후 자동 초기화 여부
-  onSuccess?: (data: T) => void // 성공 콜백
-  onError?: (error: Error) => void // 실패 콜백
+  autoReset?: boolean
+  autoResetDelay?: number
+  onSuccess?: (data: T) => void
+  onError?: (error: Error) => void
 }
 
-// useMutation 인자 타입 정의
-// A: mutateFn에 전달할 인자 타입
-// T: 성공 시 반환 데이터 타입
 interface Config<A, T> extends Options<T> {
-  mutateFn: (...args: A[]) => Promise<Response>
+  mutateFn: (args: A) => Promise<Response>
 }
 
-// 초기 상태 생성 함수 (제네릭 T 적용)
 const INITIAL_STATE = <T>(): State<T> => ({
   status: 'idle',
   error: null,
   data: null,
 })
 
-export default function useMutation<
-  A = unknown, // mutateFn에 전달할 인자 타입
-  T = unknown, // 요청 성공 시, 반환 데이터 타입
->({ mutateFn, autoReset = false, onSuccess, onError }: Config<A, T>) {
+/**
+ * 비동기 mutation 요청과 상태 관리를 위한 커스텀 훅입니다.
+ *
+ * @template A 요청 파라미터 타입
+ * @template T 응답 데이터 타입
+ *
+ * @example
+ * // POST 요청 예시
+ * const { mutate, isLoading, isSuccess, hasError, data, error, reset } = useMutation({
+ *   mutateFn: (body) => fetch('/api/todo', {
+ *     method: 'POST',
+ *     headers: { 'Content-Type': 'application/json' },
+ *     body: JSON.stringify(body)
+ *   }),
+ *   onSuccess: (data) => console.log('성공!', data),
+ *   onError: (err) => alert(err.message),
+ *   autoReset: true, // 성공/실패 후 상태 자동 초기화
+ *   autoResetDelay: 2000, // 2초 후 초기화
+ * })
+ *
+ * // 사용 예시
+ * mutate({ title: '새 할 일' })
+ *
+ * @example
+ * // GET 요청 예시 (파라미터 없이)
+ * const { mutate, data } = useMutation({
+ *   mutateFn: () => fetch('/api/user'),
+ * })
+ *
+ * useEffect(() => {
+ *   mutate()
+ * }, [])
+ */
+export default function useMutation<A = unknown, T = unknown>({
+  mutateFn,
+  autoReset = false,
+  autoResetDelay = 1500,
+  onSuccess,
+  onError,
+}: Config<A, T>) {
   const [state, setState] = useImmer<State<T>>(INITIAL_STATE<T>())
 
   const isLoading = state.status === 'pending'
@@ -35,19 +67,19 @@ export default function useMutation<
   const isSuccess = state.status === 'resolved'
 
   const mutate = useCallback(
-    async (...args: A[]) => {
+    async (args: A) => {
       setState((draft) => {
         draft.status = 'pending'
         draft.error = null
       })
 
       try {
-        const response = await mutateFn(...args)
+        const response = await mutateFn(args)
         const responseData = await response.json()
 
         if (!response.ok) {
-          // Response 객체를 throw
-          throw response
+          // 에러 객체로 변환
+          throw new Error(await extractErrorMessage(response))
         }
 
         setState((draft) => {
@@ -58,12 +90,15 @@ export default function useMutation<
         onSuccess?.(responseData as T)
 
         if (autoReset) {
-          setTimeout(() => setState(INITIAL_STATE<T>()), 1500)
+          setTimeout(() => setState(INITIAL_STATE<T>()), autoResetDelay)
         }
 
         return responseData as T
       } catch (error) {
-        const message = await extractErrorMessage(error)
+        const message =
+          error instanceof Error
+            ? error.message
+            : await extractErrorMessage(error)
         const errorObj = new Error(message)
         setState((draft) => {
           draft.status = 'rejected'
@@ -71,12 +106,12 @@ export default function useMutation<
         })
         onError?.(errorObj)
         if (autoReset) {
-          setTimeout(() => setState(INITIAL_STATE<T>()), 1500)
+          setTimeout(() => setState(INITIAL_STATE<T>()), autoResetDelay)
         }
         throw errorObj
       }
     },
-    [mutateFn, setState, autoReset, onSuccess, onError]
+    [mutateFn, setState, autoReset, autoResetDelay, onSuccess, onError]
   )
 
   const reset = useCallback(() => setState(INITIAL_STATE<T>()), [setState])
@@ -84,7 +119,6 @@ export default function useMutation<
   return { ...state, isLoading, hasError, isSuccess, mutate, reset }
 }
 
-// 에러 메시지 추출 함수
 const extractErrorMessage = async (error: unknown): Promise<string> => {
   if (error instanceof Response) {
     try {
