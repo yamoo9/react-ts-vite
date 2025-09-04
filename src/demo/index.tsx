@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import Logo from './logo'
 import Output from './output'
 import Shortcut from './shortcut'
@@ -30,6 +31,15 @@ export default function RandomCountUp() {
     animateRef.current = requestAnimationFrame(() => {
       if (count < targetCount) {
         setCount((c) => c + 1)
+      } else {
+        toast.success('카운트 업 애니메이션 종료!', {
+          action: {
+            label: '리플레이',
+            onClick: () => {
+              setReplay((r) => r + 1)
+            },
+          },
+        })
       }
     })
 
