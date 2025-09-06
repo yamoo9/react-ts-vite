@@ -1,3 +1,4 @@
+export { getTabbableElements, isFocusable } from './tabbable'
 export { default as measureTime } from './measure-time'
 export { default as debounce } from './debounce'
 export { default as throttle } from './throttle'
