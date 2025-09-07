@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import { type MouseEvent, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { XCircle } from 'lucide-react'
@@ -91,19 +89,18 @@ export default function NativeModalDialog({
       : 'opacity-0 scale-95 translate-y-4'
   )
 
-  const handleClickCloseDialog = (e: MouseEvent<HTMLDialogElement>) => {
+  const handleClickCloseDialog = (e: MouseEvent<HTMLDivElement>) => {
     if (e.currentTarget === e.target) onClose?.()
   }
 
   return createPortal(
-    <dialog
-      ref={dialogRef}
-      aria-modal
-      onClick={handleClickCloseDialog}
+    <div
+      role="presentation"
       className={backdropClass}
       style={{ transitionProperty: 'opacity, filter' }}
+      onClick={handleClickCloseDialog}
     >
-      <div className={modalClass}>
+      <dialog ref={dialogRef} aria-modal className={modalClass}>
         {children}
         <button
           type="button"
@@ -116,8 +113,8 @@ export default function NativeModalDialog({
         >
           <XCircle />
         </button>
-      </div>
-    </dialog>,
+      </dialog>
+    </div>,
     dialogPortal
   )
 }

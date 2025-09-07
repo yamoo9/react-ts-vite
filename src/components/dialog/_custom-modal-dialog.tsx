@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import { type MouseEvent, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { XCircle } from 'lucide-react'
@@ -89,14 +87,12 @@ export default function CustomModalDialog({
 
   return createPortal(
     <div
-      ref={dialogRef}
-      role="dialog"
-      aria-modal
+      role="presentation"
       onClick={handleClickCloseDialog}
       className={backdropClass}
       style={{ transitionProperty: 'opacity, filter' }}
     >
-      <div className={modalClass}>
+      <div ref={dialogRef} role="dialog" aria-modal className={modalClass}>
         {children}
         <button
           type="button"
