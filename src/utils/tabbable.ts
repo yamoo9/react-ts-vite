@@ -1,7 +1,7 @@
 /**
  * CSS 선택자 문자열로, 키보드 탐색(Tab)이 가능한 요소들을 선택합니다.
  */
-const tabbableSelector = [
+export const tabbableSelector = [
   'a[href]', // 링크
   'area[href]', // 이미지 맵 영역
   'button', // 버튼
