@@ -298,8 +298,9 @@ export default function SignUpForm() {
           aria-disabled={isSubmitting}
           className={tw(
             'cursor-pointer',
-            'w-full bg-blue-600 text-white py-2 rounded transition',
+            'w-full bg-blue-600 border-1 border-blue-600 text-white py-3 rounded',
             'hover:bg-blue-700',
+            'focus:bg-blue-800 focus:border-blue-800',
             'aria-disabled:cursor-not-allowed aria-disabled:opacity-50'
           )}
         >

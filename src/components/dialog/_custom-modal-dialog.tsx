@@ -69,7 +69,7 @@ export default function CustomModalDialog({
   // 애니메이션 클래스
   const backdropClass = tw(
     'fixed inset-0 flex justify-center items-center',
-    'bg-black/20 backdrop-blur-xs',
+    'bg-black/10 backdrop-blur-xs',
     'transition-all duration-250',
     openAndIsntAnimating ? 'opacity-100' : 'opacity-0 pointer-events-none'
   )

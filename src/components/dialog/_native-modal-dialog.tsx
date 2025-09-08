@@ -82,8 +82,11 @@ export default function NativeModalDialog({
     openAndIsntAnimating ? 'opacity-100' : 'opacity-0 pointer-events-none'
   )
 
-  const modalClass = tw(
-    'relative bg-white p-5 rounded-md shadow-xl transition-all duration-250',
+  const dialogClass = tw(
+    'overflow-visible',
+    'relative',
+    'border-0 p-5 rounded-md shadow-xl bg-white',
+    'transition-all duration-250',
     openAndIsntAnimating
       ? 'opacity-100 scale-100 translate-y-0'
       : 'opacity-0 scale-95 translate-y-4'
@@ -100,7 +103,7 @@ export default function NativeModalDialog({
       style={{ transitionProperty: 'opacity, filter' }}
       onClick={handleClickCloseDialog}
     >
-      <dialog ref={dialogRef} aria-modal className={modalClass}>
+      <dialog ref={dialogRef} aria-modal className={dialogClass}>
         {children}
         <button
           type="button"

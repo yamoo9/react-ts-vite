@@ -144,9 +144,11 @@ export default function SignInForm() {
           aria-disabled={isSubmitting}
           className={tw(
             'cursor-pointer',
-            'w-full border-0 py-2 rounded transition',
+            'w-full border-0 py-3 rounded',
+            'border-1 border-blue-600',
             'bg-blue-600 text-white',
             'hover:bg-blue-700',
+            'focus:bg-blue-800 focus:border-blue-800',
             'aria-disabled:cursor-not-allowed aria-disabled:opacity-50'
           )}
         >
