@@ -1,7 +1,7 @@
 import { type MouseEvent, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { XCircle } from 'lucide-react'
-import { useAnimate } from '@/hooks'
+import { useOpenAnimating } from '@/hooks'
 import { tw } from '@/utils'
 import { tabbableSelector } from '@/utils/tabbable'
 import type { CustomDialogProps } from './types'
@@ -27,10 +27,7 @@ export default function CustomModalDialog({
   const animationDuration = 250
 
   // open 상태 변화에 따라 애니메이션 중인지 여부 반환
-  const { animating } = useAnimate(open, animationDuration)
-
-  // 모달이 열렸고, 애니메이션 중이 아닌 상태
-  const openAndIsntAnimating = open && !animating
+  const { openFinished } = useOpenAnimating(open, animationDuration)
 
   // 모달 열림/닫힘 시, 초점 및 키보드 이벤트 처리
   useEffect(() => {
@@ -111,7 +108,7 @@ export default function CustomModalDialog({
         'fixed inset-0 flex justify-center items-center',
         'bg-black/10 backdrop-blur-[2px]',
         'transition-all duration-250',
-        openAndIsntAnimating ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        openFinished ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
       style={{ transitionProperty: 'opacity, filter' }}
     >
@@ -120,8 +117,9 @@ export default function CustomModalDialog({
         role="dialog"
         aria-modal
         className={tw(
-          'relative bg-white p-5 rounded-md shadow-xl transition-all duration-250',
-          openAndIsntAnimating
+          'relative bg-white p-5 rounded-md shadow-xl',
+          'transition-all duration-250',
+          openFinished
             ? 'opacity-100 scale-100 translate-y-0'
             : 'opacity-0 scale-95 translate-y-4'
         )}
